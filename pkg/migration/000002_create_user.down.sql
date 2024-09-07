@@ -1,0 +1,4 @@
+
+ALTER TABLE users DROP INDEX uc_email;
+
+DROP DATABASE users;

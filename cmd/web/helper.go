@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
-	"time"
+
+	"github.com/morgan/snippetbox/pkg/models"
 )
 
 // The serverError writes an error message and stack trace to the errorLogger
@@ -46,10 +47,10 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 	buf.WriteTo(w)
 }
 
-func (app *application) addDefaultData(td *templateData, _ *http.Request) *templateData {
-	if td == nil {
-		td = &templateData{}
+func (app *application) authenticatedUser(r *http.Request) *models.User {
+	user, ok := r.Context().Value(contextKeyUser).(*models.User)
+	if !ok {
+		return nil
 	}
-	td.CurrentYear = time.Now().Year()
-	return td
+	return user
 }
