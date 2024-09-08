@@ -9,16 +9,25 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golangcollege/sessions"
-	"github.com/morgan/snippetbox/pkg/models/database"
+	"github.com/morgan/snippetbox/pkg/models"
 )
 
 type application struct {
-	errorLog      *log.Logger
-	infoLog       *log.Logger
-	snippets      *database.SnippetModel
+	errorLog *log.Logger
+	infoLog  *log.Logger
+
 	templateCache map[string]*template.Template
 	session       *sessions.Session
-	users         *database.UserModel
+	snippets      interface {
+		Insert(string, string, string) (int, error)
+		Get(int) (*models.Snippet, error)
+		Latest() ([]*models.Snippet, error)
+	}
+	users interface {
+		Insert(string, string, string) error
+		Authenticate(string, string) (int, error)
+		Get(int) (*models.User, error)
+	}
 }
 
 func (app *application) applyMigrations(db *sql.DB, migrationsFolderPath string) error {
